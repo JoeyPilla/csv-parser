@@ -12,7 +12,7 @@ import (
 	"os"
 )
 
-func HandleXLSX(name string, f *multipart.FileHeader) []string {
+func HandleXLSX(name string, f *multipart.FileHeader, year string) []string {
 	// open an existing file
 	file, _ := f.Open()
 	bytes, _ := ioutil.ReadAll(file)
@@ -24,17 +24,17 @@ func HandleXLSX(name string, f *multipart.FileHeader) []string {
 	names := []string{}
 	if sheetLen == 1 {
 		for _, sh := range xlFile.Sheets {
-			names = append(names, handleSheet(sh, name)...)
+			names = append(names, handleSheet(sh, name, year)...)
 		}
 	} else {
 		for _, sh := range xlFile.Sheets {
-			names = append(names, handleSheet(sh, fmt.Sprintf("%s_sheet1", name))...)
+			names = append(names, handleSheet(sh, fmt.Sprintf("%s_sheet1", name), year)...)
 		}
 	}
 	return names
 }
 
-func handleSheet(sheet *xlsx.Sheet, name string) []string {
+func handleSheet(sheet *xlsx.Sheet, name, year string) []string {
 	_, err := os.Stat("temp")
 
 	if os.IsNotExist(err) {
@@ -88,7 +88,7 @@ func handleSheet(sheet *xlsx.Sheet, name string) []string {
 	// Parse the file
 	r := csv.NewReader(csvfile)
 	//r := csv.NewReader(bufio.NewReader(csvfile))
-	processFile(r, w)
+	processFile(r, w, year)
 	w.Flush()
 	xlsxFileName := fmt.Sprintf("processed/xlsx/%s.xlsx", name)
 

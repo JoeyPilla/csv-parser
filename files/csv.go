@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func HandleCSV(name string, f *multipart.FileHeader) []string {
+func HandleCSV(name string, f *multipart.FileHeader, year string) []string {
 	processedFileName := fmt.Sprintf("processed/csv/%s.csv", name)
 	xlsxFileName := fmt.Sprintf("processed/xlsx/%s.xlsx", name)
 	csvfile, _ := f.Open()
@@ -23,13 +23,13 @@ func HandleCSV(name string, f *multipart.FileHeader) []string {
 	// Parse the file
 	r := csv.NewReader(csvfile)
 
-	processFile(r, writer)
+	processFile(r, writer, year)
 	writer.Flush()
 	CSVtoXLSX(processedFileName, xlsxFileName)
 	return []string{processedFileName, xlsxFileName}
 }
 
-func processFile(r *csv.Reader, writer *csv.Writer) {
+func processFile(r *csv.Reader, writer *csv.Writer, year string) {
 	// Iterate through the records
 	ledgerNumber, ledgerName := "", ""
 	for {
@@ -41,6 +41,6 @@ func processFile(r *csv.Reader, writer *csv.Writer) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		ledgerNumber, ledgerName = processRow(record, ledgerNumber, ledgerName, writer)
+		ledgerNumber, ledgerName = processRow(record, ledgerNumber, ledgerName, year, writer)
 	}
 }

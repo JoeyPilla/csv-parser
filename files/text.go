@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func HandleTXT(name string, f *multipart.FileHeader) []string {
+func HandleTXT(name string, f *multipart.FileHeader, year string) []string {
 	processedFileName := fmt.Sprintf("processed/%s.csv", name)
 	pFile, err := os.Create(processedFileName)
 	defer pFile.Close()
@@ -25,7 +25,7 @@ func HandleTXT(name string, f *multipart.FileHeader) []string {
 	ledgerNumber, ledgerName := "", ""
 	for scanner.Scan() {
 		row := strings.Split(scanner.Text(), "|")
-		ledgerNumber, ledgerName = processRow(row, ledgerNumber, ledgerName, writer)
+		ledgerNumber, ledgerName = processRow(row, ledgerNumber, ledgerName, year, writer)
 	}
 	return []string{processedFileName}
 }
